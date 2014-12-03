@@ -1,185 +1,82 @@
-int boardLED = 13;
-int leftSignal = 11;                
-int rightSignal = 9;
-int signalLow = 10;
+
+
+const int driverPin1 = 13;
+const int driverPin2 = 12;
+const int driverPin3 = 11;
+const int switchPin = 10;
+int switchValue;
+
+const int rightPin1 = 6;
+const int rightPin2 = 7;
+const int rightPin3 = 8;
+const int switchRight = 9;
+int switchRightValue;
+
 int rightLow = 4;
-int leftSwitch = 12;
-int rightSwitch = 6;
-int leftLED = 5;
-int rightLED = 3;
-int x, y;
-int mode = 0;
-int DAY = 0;
-int NIGHT = 1;
 
-void setup()                    // run once, when the sketch starts
+void setup()
 {
-  pinMode(boardLED, OUTPUT);
-  
-  pinMode(leftSignal, OUTPUT);
-  pinMode(rightSignal, OUTPUT); 
-  
-  pinMode(signalLow, OUTPUT);  
-  pinMode(rightLow, OUTPUT);  
-  
-  pinMode(leftSwitch, INPUT);  
-  digitalWrite(leftSwitch, HIGH);
-  pinMode(rightSwitch, INPUT);  
-  digitalWrite(rightSwitch, HIGH);
-  
-  pinMode(leftLED, OUTPUT);   
-  pinMode(rightLED, OUTPUT);   
-  
-  digitalWrite(boardLED, HIGH);
-  digitalWrite(signalLow, LOW);
-  digitalWrite(rightLow, LOW);
+    pinMode (driverPin1, OUTPUT);
+    pinMode (driverPin2, OUTPUT);
+    pinMode (driverPin3, OUTPUT);
+    
+    pinMode (rightPin1, OUTPUT);
+    pinMode (rightPin2, OUTPUT);
+    pinMode (rightPin3, OUTPUT);
+    
+    pinMode (rightLow, OUTPUT);
+    
+    pinMode (switchPin, INPUT);
+    digitalWrite(switchPin, HIGH);
+    
+    pinMode (switchRight, INPUT);
+    digitalWrite(switchRight, HIGH);
+    
+    digitalWrite(rightLow, LOW); 
 }
 
-void loop()                     // run over and over again
-{ 
-  checkLeft();
-  checkRight();
-  if (mode == NIGHT)
-    night();  
-  else  
-    day();
-}
-
-void checkLeft()
+void loop()
 {
-  if (digitalRead(leftSwitch) == LOW)
-  {
-    digitalWrite(boardLED, LOW);
-    while (digitalRead(leftSwitch) == LOW)
-    {
-      if (digitalRead(rightSwitch) == LOW)
-      {
-        while (digitalRead(rightSwitch) == LOW | digitalRead(leftSwitch) == LOW);
-        mode = 1-mode;
-        digitalWrite(boardLED, HIGH);
-        return;
-      }
+  switchValue = digitalRead(switchPin);
+  switchRightValue = digitalRead(switchRight);
+  
+  // if left sleeve button is pressed
+  if (switchValue == LOW) {
+      for (int i = 0; i < 4; i++) {
+      digitalWrite (driverPin1, HIGH);
+      delay (200);
+      digitalWrite (driverPin2, HIGH);
+      delay (200);
+      digitalWrite (driverPin3, HIGH);
+      delay (800);
+      digitalWrite (driverPin1, LOW);
+      digitalWrite (driverPin2, LOW);
+      digitalWrite (driverPin3, LOW);
+      delay ( );
     }
-    leftTurn();
+  } else {
+    digitalWrite (driverPin1, LOW);
+    digitalWrite (driverPin2, LOW);
+    digitalWrite (driverPin3, LOW); 
   }
-}
-
-void checkRight()
-{
-  if (digitalRead(rightSwitch) == LOW)
-  {
-    digitalWrite(boardLED, LOW);
-    while (digitalRead(rightSwitch) == LOW)
-    {
-      if (digitalRead(leftSwitch) == LOW)
-      {
-         while (digitalRead(leftSwitch) == LOW | digitalRead(rightSwitch) == LOW);
-         mode = 1-mode;
-         digitalWrite(boardLED, HIGH);
-         return;
-      }
-    }
-    rightTurn();
-  }
-}
-
-void leftTurn()
-{
-  for (x=0;x<10;x++)
-  {
-    digitalWrite(leftSignal, HIGH); 
-    digitalWrite(leftLED, LOW); 
-    for(y=0;y<10;y++)
-    {
-      delay(30);
-      if (digitalRead(leftSwitch) == LOW)
-      {
-        while (digitalRead(leftSwitch) == LOW);
-        digitalWrite(leftSignal, LOW);  
-        digitalWrite(leftLED, LOW); 
-        return;
-      }
-    }
-    digitalWrite(leftSignal, LOW);
-    digitalWrite(leftLED, HIGH);
-    for(y=0;y<10;y++)
-    {
-      delay(30);
-      if (digitalRead(leftSwitch) == LOW)
-      {
-        while (digitalRead(leftSwitch) == LOW);
-        digitalWrite(leftSignal, LOW);  
-        digitalWrite(leftLED, LOW);
-        return;
-      }
-    }
-    digitalWrite(leftLED, LOW); 
-  }
-}
-
-void rightTurn()
-{
-  for (x=0;x<10;x++)
-  {
-    digitalWrite(rightSignal, HIGH); 
-    digitalWrite(rightLED, LOW); 
-    for(y=0;y<10;y++)
-    {
-      delay(30);
-      if (digitalRead(rightSwitch) == LOW)
-      {
-        while (digitalRead(rightSwitch) == LOW);
-        digitalWrite(rightSignal, LOW);  
-        digitalWrite(rightLED, LOW); 
-        return;
-      }
-    }
-    digitalWrite(rightSignal, LOW); 
-    digitalWrite(rightLED, HIGH); 
-    for(y=0;y<10;y++)
-    {
-      delay(30);
-      if (digitalRead(rightSwitch) == LOW)
-      {
-        while (digitalRead(rightSwitch) == LOW);
-        digitalWrite(rightSignal, LOW);  
-        digitalWrite(rightLED, LOW); 
-        return;
-      }
-    }
-    digitalWrite(rightLED, LOW); 
-  }
-}
-
-void night()
-{
-  digitalWrite(boardLED, LOW); 
   
-  digitalWrite(rightSignal, HIGH); 
-  digitalWrite(leftSignal, HIGH);  
-  digitalWrite(leftLED, LOW); 
-  digitalWrite(rightLED, LOW); 
-  delay(100);
-  digitalWrite(rightSignal, LOW);  
-  digitalWrite(leftSignal, LOW);
-  digitalWrite(leftLED, HIGH); 
-  digitalWrite(rightLED, HIGH); 
-  delay(100);
-  digitalWrite(leftLED, LOW); 
-  digitalWrite(rightLED, LOW); 
-}
-
-void day()
-{
-  
-  digitalWrite(boardLED, HIGH); 
-  delay(1);
-  digitalWrite(boardLED, LOW); 
-  digitalWrite(leftLED, HIGH);
-  delay (1);
-  digitalWrite(leftLED, LOW);
-  digitalWrite(rightLED, HIGH);
-  delay(1);
-  digitalWrite(rightLED, LOW);
-  delay (5);
+  // if right sleeve button is pressed
+  if (switchRightValue == LOW) {
+    for (int j = 0; j < 4; j++) {
+    digitalWrite (rightPin1, HIGH);
+    delay (200);
+    digitalWrite (rightPin2, HIGH);
+    delay (200);
+    digitalWrite (rightPin3, HIGH);
+    delay (800);
+    digitalWrite (rightPin1, LOW);
+    digitalWrite (rightPin2, LOW);
+    digitalWrite (rightPin3, LOW);
+    delay (400);
+    }
+  } else {
+    digitalWrite (rightPin1, LOW);
+    digitalWrite (rightPin2, LOW);
+    digitalWrite (rightPin3, LOW); 
+  }
 }
